@@ -16,7 +16,7 @@ def tacosandburritos_train(
     workspace
 ):
   """Pipeline steps"""
-
+  persistent_volume_name = 'azure'
   persistent_volume_path = '/mnt/azure'
   data_download = 'https://aiadvocate.blob.core.windows.net/public/tacodata.zip'
   epochs = 5
@@ -84,7 +84,7 @@ def tacosandburritos_train(
   )
   operations['register'].after(operations['training'])
 
-  operations['profile'] = dsl.ContainerOp(
+"""   operations['profile'] = dsl.ContainerOp(
     name='profile',
     image='insert your image here',
     command=['sh'],
@@ -134,7 +134,7 @@ def tacosandburritos_train(
           claim_name='azure-managed-disk')
       )
     ).add_volume_mount(k8s_client.V1VolumeMount(
-      mount_path='/mnt/azure', name='azure'))
+      mount_path='/mnt/azure', name='azure')) """
 
 if __name__ == '__main__':
   compiler.Compiler().compile(tacosandburritos_train, __file__ + '.tar.gz')
