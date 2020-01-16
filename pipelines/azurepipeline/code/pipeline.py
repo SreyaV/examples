@@ -33,7 +33,7 @@ def tacosandburritos_train(
   # preprocess data
   operations['preprocess'] = dsl.ContainerOp(
     name='preprocess',
-    image='insert your image here',
+    image='svangara.azurecr.io/preprocess:6',
     command=['python'],
     arguments=[
       '/scripts/data.py',
@@ -48,7 +48,7 @@ def tacosandburritos_train(
   # train
   operations['training'] = dsl.ContainerOp(
     name='training',
-    image='insert your image here',
+    image='svangara.azurecr.io/preprocess:6',
     command=['python'],
     arguments=[
       '/scripts/train.py',
@@ -63,7 +63,7 @@ def tacosandburritos_train(
     ]
   )
   operations['training'].after(operations['preprocess'])
-
+  '''
   # register model
   operations['register'] = dsl.ContainerOp(
     name='register',
@@ -124,7 +124,7 @@ def tacosandburritos_train(
       '-b', persistent_volume_path
     ]
   )
-  operations['deploy'].after(operations['profile'])
+  operations['deploy'].after(operations['profile'])'''
   for _, op_1 in operations.items():
     op_1.container.set_image_pull_policy("Always")
     op_1.add_volume(
