@@ -43,6 +43,7 @@ if __name__ == "__main__":
   # save file
   print('writing dataset to {}'.format(target_path))
   with open(str(target_path), 'w+') as f:
-    f.write(TRAIN_OUTPUT)
+    for item in TRAIN_OUTPUT:
+      f.write("%s\n" % item)
 
   # python data.py -z https://aiadvocate.blob.core.windows.net/public/tacodata.zip -t train.txt
