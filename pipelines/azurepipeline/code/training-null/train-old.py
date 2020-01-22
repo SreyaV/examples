@@ -16,10 +16,6 @@ from azureml.core import Workspace
 from azureml.core.model import Model
 from azureml.core.authentication import ServicePrincipalAuthentication
 from sklearn.linear_model import LinearRegression
-from __future__ import absolute_import, division, print_function, unicode_literals
-from tensorflow import keras
-from tensorflow.keras import layers
-import numpy as np
 
 '''
 def get_ws(tenant_id, service_principal_id,
@@ -139,35 +135,21 @@ def generate_hash(dfile, key):
 
 
 def run(output='model'):
-  
-  model = tf.keras.Sequential()
-  # Adds a densely-connected layer with 64 units to the model:
-  model.add(layers.Dense(64, activation='relu'))
-  # Add another:
-  model.add(layers.Dense(64, activation='relu'))
-  # Add a softmax layer with 10 output units:
-  model.add(layers.Dense(10, activation='softmax'))
+  TRAIN_SET_LIMIT = 1000
+  TRAIN_SET_COUNT = 100
 
-  layers.Dense(64, activation='sigmoid')
+  TRAIN_INPUT = list()
+  TRAIN_OUTPUT = list()
+  for i in range(TRAIN_SET_COUNT):
+      a = randint(0, TRAIN_SET_LIMIT)
+      b = randint(0, TRAIN_SET_LIMIT)
+      c = randint(0, TRAIN_SET_LIMIT)
+      op = a + (2*b) + (3*c)
+      TRAIN_INPUT.append([a, b, c])
+      TRAIN_OUTPUT.append(op)
 
-  model = tf.keras.Sequential([
-  # Adds a densely-connected layer with 64 units to the model:
-  layers.Dense(64, activation='relu', input_shape=(32,)),
-  # Add another:
-  layers.Dense(64, activation='relu'),
-  # Add a softmax layer with 10 output units:
-  layers.Dense(10, activation='softmax')])
-
-  model.compile(optimizer=tf.keras.optimizers.Adam(0.01),
-                loss='categorical_crossentropy',
-                metrics=['accuracy'])
-
-  model.summary()
-
-  data = np.random.random((1000, 32))
-  labels = np.random.random((1000, 10))
-  info('Training')
-  model.fit(data, labels, epochs=10, batch_size=32)
+  model = LinearRegression(n_jobs=-1)
+  model.fit(X=TRAIN_INPUT, y=TRAIN_OUTPUT)
 
   # save model
   info('Saving Model')
