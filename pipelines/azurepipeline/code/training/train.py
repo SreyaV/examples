@@ -81,12 +81,13 @@ if __name__ == "__main__":
   parser.add_argument('-f', '--dataset', help='cleaned data listing')
   args = parser.parse_args()
 
+  print("original path " + str(Path(args.base_path)) + "\n")
   data_path = Path(args.base_path).joinpath(args.data).resolve(strict=False)
   data_output_path = Path(args.base_path).joinpath(args.data2).resolve(strict=False)
   target_path = Path(args.base_path).resolve(strict=False).joinpath(args.outputs)
   
-  print("data path " + str(data_path) + "\n")
-  print("data output " + str(data_output_path) + "\n")
+  print("input data path " + str(data_path) + "\n")
+  print("output data path " + str(data_output_path) + "\n")
   print("target path " + str(target_path) + "\n")
   # dataset = Path(args.base_path).joinpath(args.dataset)
   # print("full data path ", str(dataset) + "\n")

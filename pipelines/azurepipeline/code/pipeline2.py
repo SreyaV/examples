@@ -39,7 +39,7 @@ def tacosandburritos_train(
       '/scripts/data.py',
       '--base_path', persistent_volume_path,
       '--data', training_folder,
-      '--target', training_dataset,
+      # '--target', training_dataset,
       '--img_size', image_size,
       '--zipfile', data_download
     ]
