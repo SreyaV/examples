@@ -53,13 +53,7 @@ def tacosandburritos_train(
     arguments=[
       '/scripts/train.py',
       '--base_path', persistent_volume_path,
-      '--data', training_folder,
-      '--epochs', epochs,
-      '--batch', batch,
-      '--image_size', image_size,
-      '--lr', learning_rate,
-      '--outputs', model_folder,
-      '--dataset', training_dataset
+      '--outputs', model_folder
     ]
   )
   operations['training'].after(operations['preprocess'])

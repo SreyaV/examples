@@ -6,7 +6,7 @@ RUN pip install -r /scripts/requirements.txt
 
 COPY train.py /scripts/train.py
 
-# python train.py -d data/PetImages -e 1 -b 32 -l 0.0001 -o model -f dataset.txt
+# python train.py -o model
 # will be overwritten by kf pipeline
 ENTRYPOINT [ "python", \
             "/scripts/train.py", \
