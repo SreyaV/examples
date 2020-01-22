@@ -56,11 +56,11 @@ def tacosandburritos_train(
     ]
   )
   operations['training'].after(operations['preprocess'])
-  '''
+  
   # register model
   operations['register'] = dsl.ContainerOp(
     name='register',
-    image='insert your image here',
+    image='svangara.azurecr.io/register:1',
     command=['python'],
     arguments=[
       '/scripts/register.py',
@@ -76,7 +76,7 @@ def tacosandburritos_train(
     ]
   )
   operations['register'].after(operations['training'])
-
+  '''
   operations['profile'] = dsl.ContainerOp(
     name='profile',
     image='insert your image here',
