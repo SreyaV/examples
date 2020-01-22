@@ -91,10 +91,12 @@ if __name__ == "__main__":
   for tag in tags:
     print('{} => {}'.format(tag, tags[tag]))
 
-  rgs['tags'] = tags
+  
 
   workspc = get_ws(**wsrgs)
   rgs['ws'] = workspc
+
+  rgs['tags'] = tags
   run(**rgs)
 
   # python register.py --model_path v --model_name c --tenant_id c
