@@ -8,8 +8,8 @@ import argparse
 from random import shuffle
 from pathlib2 import Path
 import numpy as np
-import tensorflow as tf
-from tensorflow.data import Dataset
+# import tensorflow as tf
+# from tensorflow.data import Dataset
 
 
 def info(msg, char="#", width=75):
@@ -26,10 +26,11 @@ def check_dir(path):
 
 
 def process_image(path, label, img_size):
-  img_raw = tf.io.read_file(path)
-  img_tensor = tf.image.decode_jpeg(img_raw, channels=3)
-  img_final = tf.image.resize(img_tensor, [img_size, img_size]) / 255
-  return img_final, label
+  return None
+  # img_raw = tf.io.read_file(path)
+  # img_tensor = tf.image.decode_jpeg(img_raw, channels=3)
+  # img_final = tf.image.resize(img_tensor, [img_size, img_size]) / 255
+  # return img_final, label
 
 
 def load_dataset(base_path, dset, split=None):
@@ -81,13 +82,13 @@ def run(
 
   # training data
   train_data, train_labels = zip(*train)
-  train_ds = Dataset.zip((Dataset.from_tensor_slices(list(train_data)),
-                          Dataset.from_tensor_slices(list(train_labels)), img_size))
+  # train_ds = Dataset.zip((Dataset.from_tensor_slices(list(train_data)),
+  #                         Dataset.from_tensor_slices(list(train_labels)), img_size))
 
   train_ds = train_ds.map(map_func=process_image,
                           num_parallel_calls=5)
 
-  train_ds = train_ds.apply(tf.data.experimental.ignore_errors())
+  # train_ds = train_ds.apply(tf.data.experimental.ignore_errors())
 
   train_ds = train_ds.batch(batch_size)
   train_ds = train_ds.prefetch(buffer_size=5)
@@ -95,42 +96,42 @@ def run(
 
   # model
   info('Creating Model')
-  base_model = tf.keras.applications.MobileNetV2(input_shape=img_shape,
-                                                 include_top=False,
-                                                 weights='imagenet')
-  base_model.trainable = True
+  # base_model = tf.keras.applications.MobileNetV2(input_shape=img_shape,
+  #                                                include_top=False,
+  #                                                weights='imagenet')
+  # base_model.trainable = True
 
-  model = tf.keras.Sequential([
-    base_model,
-    tf.keras.layers.GlobalAveragePooling2D(),
-    tf.keras.layers.Dense(1, activation='sigmoid')
-  ])
+  # model = tf.keras.Sequential([
+  #   base_model,
+  #   tf.keras.layers.GlobalAveragePooling2D(),
+  #   tf.keras.layers.Dense(1, activation='sigmoid')
+  # ])
 
-  model.compile(optimizer=tf.keras.optimizers.Adam(lr=learning_rate),
-                loss='binary_crossentropy',
-                metrics=['accuracy'])
+  # model.compile(optimizer=tf.keras.optimizers.Adam(lr=learning_rate),
+  #               loss='binary_crossentropy',
+  #               metrics=['accuracy'])
 
-  model.summary()
+  # model.summary()
 
   # training
   info('Training')
   steps_per_epoch = math.ceil(len(train) / batch_size)
-  model.fit(train_ds, epochs=epochs, steps_per_epoch=steps_per_epoch)
+  # model.fit(train_ds, epochs=epochs, steps_per_epoch=steps_per_epoch)
 
-  # save model
-  info('Saving Model')
+  # # save model
+  # info('Saving Model')
 
-  # check existence of base model folder
-  output = check_dir(output)
+  # # check existence of base model folder
+  # output = check_dir(output)
 
-  print('Serializing into saved_model format')
-  tf.saved_model.save(model, str(output))
+  # print('Serializing into saved_model format')
+  # tf.saved_model.save(model, str(output))
   print('Done!')
 
   # add time prefix folder
   file_output = str(Path(output).joinpath('latest.h5'))
   print('Serializing h5 model to:\n{}'.format(file_output))
-  model.save(file_output)
+  # model.save(file_output)
 
   return generate_hash(file_output, 'kf_pipeline')
 
@@ -161,7 +162,7 @@ if __name__ == "__main__":
   parser.add_argument('-f', '--dataset', help='cleaned data listing')
   args = parser.parse_args()
 
-  info('Using TensorFlow v.{}'.format(tf.__version__))
+  # info('Using TensorFlow v.{}'.format(tf.__version__))
 
   data_path = Path(args.base_path).joinpath(args.data).resolve(strict=False)
   target_path = Path(args.base_path).resolve(strict=False).joinpath(args.outputs)

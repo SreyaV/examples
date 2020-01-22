@@ -43,6 +43,8 @@ if __name__ == "__main__":
   # save file
   print('writing dataset to {}'.format(target_path))
   with open(str(target_path), 'w+') as f:
+    for item in TRAIN_INPUT:
+      f.write("%s\n" % item)
     for item in TRAIN_OUTPUT:
       f.write("%s\n" % item)
 
