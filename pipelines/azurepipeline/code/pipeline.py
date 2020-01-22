@@ -52,7 +52,6 @@ def tacosandburritos_train(
     command=['python'],
     arguments=[
       '/scripts/train.py',
-      '--base_path', persistent_volume_path,
       '--outputs', model_folder
     ]
   )
