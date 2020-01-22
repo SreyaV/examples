@@ -164,7 +164,10 @@ if __name__ == "__main__":
   args = parser.parse_args()
 
   info('Using TensorFlow v.{}'.format(tf.__version__))
+<<<<<<< HEAD
 
+=======
+>>>>>>> aba735929e4bbedd0420215da31458aef5af2447
   target_path = Path('/mnt/azure').resolve(strict=False).joinpath(args.outputs)
 
   args = {
