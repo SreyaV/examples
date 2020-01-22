@@ -196,6 +196,7 @@ if __name__ == "__main__":
   info('Using TensorFlow v.{}'.format(tf.__version__))
 
   target_path = Path('/mnt/azure').resolve(strict=False).joinpath(args.outputs)
+  params = Path('/mnt/azure').joinpath('params.json')
 
   args = {
     "output": str(target_path),
