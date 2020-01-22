@@ -71,7 +71,8 @@ def generate_hash(dfile, key):
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description='transfer learning for binary image task')
   parser.add_argument('-s', '--base_path', help='directory to base data', default='../../data')
-  parser.add_argument('-d', '--data', help='directory to training and test data', default='train.txt')
+  parser.add_argument('-d', '--data', help='directory to training and test data', default='trainInput.txt')
+  parser.add_argument('-y', '--data2', help='target file to hold output data', default='trainOutput.txt')
   parser.add_argument('-e', '--epochs', help='number of epochs', default=10, type=int)
   parser.add_argument('-b', '--batch', help='batch size', default=32, type=int)
   parser.add_argument('-i', '--image_size', help='image size', default=160, type=int)
@@ -81,11 +82,12 @@ if __name__ == "__main__":
   args = parser.parse_args()
 
   data_path = Path(args.base_path).joinpath(args.data).resolve(strict=False)
+  data_output_path = Path(args.base_path).joinpath(args.data2).resolve(strict=False)
   target_path = Path(args.base_path).resolve(strict=False).joinpath(args.outputs)
   
   print("data path " + str(data_path) + "\n")
+  print("data output " + str(data_output_path) + "\n")
   print("target path " + str(target_path) + "\n")
-  print("args dataset " + str(args.dataset) + "\n")
   # dataset = Path(args.base_path).joinpath(args.dataset)
   # print("full data path ", str(dataset) + "\n")
   # image_size = args.image_size
@@ -103,25 +105,30 @@ if __name__ == "__main__":
   #   "dset": str(dataset)
   # }
 
-  TRAIN_SET_COUNT = 100
-  TRAIN_INPUT= list()
-  TRAIN_OUTPUT = list()
-
-  with open(str(data_path), 'r') as filehandle:
-    i = 0
-    for line in filehandle:
-      currentPlace = line[:-1]
-      if i < TRAIN_SET_COUNT:
-        currentPlace = list(currentPlace)
-        TRAIN_INPUT.append(currentPlace)
-      else:
-        # currentPlace = list(currentPlace)
-        TRAIN_OUTPUT.append(currentPlace)
-      i += 1
-
+  TRAIN_INPUT = np.loadtxt(str(data_path))
   print(TRAIN_INPUT)
-  print('\n')
+  print('\n' + str(np.shape(TRAIN_INPUT)))
+
+  TRAIN_OUTPUT = np.loadtxt(str(data_output_path))
   print(TRAIN_OUTPUT)
+  print('\n' + str(np.shape(TRAIN_OUTPUT)))
+
+  # TRAIN_SET_COUNT = 100
+  # TRAIN_INPUT= list()
+  # TRAIN_OUTPUT = list()
+
+  # with open(str(data_path), 'r') as filehandle:
+  #   i = 0
+  #   for line in filehandle:
+  #     currentPlace = line[:-2]
+  #     currentPlace = currentPlace[1:]
+  #     if i < TRAIN_SET_COUNT:
+  #       currentPlace = list(currentPlace.split(','))
+  #       TRAIN_INPUT.append(currentPlace)
+  #     else:
+  #       # currentPlace = list(currentPlace)
+  #       TRAIN_OUTPUT.append(currentPlace)
+  #     i += 1
     
   from sklearn.linear_model import LinearRegression
 
