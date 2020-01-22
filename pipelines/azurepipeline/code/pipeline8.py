@@ -16,7 +16,7 @@ def tacosandburritos_train(
     workspace
 ):
   """Pipeline steps"""
-
+  persistent_volume_name = 'azure'
   persistent_volume_path = '/mnt/azure'
   data_download = 'https://aiadvocate.blob.core.windows.net/public/tacodata.zip'
   epochs = 5
@@ -48,19 +48,26 @@ def tacosandburritos_train(
   # train
   operations['training'] = dsl.ContainerOp(
     name='training',
-    image='svangara.azurecr.io/training:1',
+    image='svangara.azurecr.io/training:4',
     command=['python'],
     arguments=[
       '/scripts/train.py',
-      '--outputs', model_folder
+      '--base_path', persistent_volume_path,
+      '--data', training_folder,
+      '--epochs', epochs,
+      '--batch', batch,
+      '--image_size', image_size,
+      '--lr', learning_rate,
+      '--outputs', model_folder,
+      '--dataset', training_dataset
     ]
   )
   operations['training'].after(operations['preprocess'])
-  '''
+
   # register model
   operations['register'] = dsl.ContainerOp(
     name='register',
-    image='insert your image here',
+    image='svangara.azurecr.io/register:5',
     command=['python'],
     arguments=[
       '/scripts/register.py',
@@ -75,49 +82,7 @@ def tacosandburritos_train(
       '--workspace', workspace
     ]
   )
-  operations['register'].after(operations['training'])
-
-  operations['profile'] = dsl.ContainerOp(
-    name='profile',
-    image='insert your image here',
-    command=['sh'],
-    arguments=[
-      '/scripts/profile.sh',
-      '-n', profile_name,
-      '-m', model_name,
-      '-i', '/scripts/inferenceconfig.json',
-      '-d', '{"image":"https://www.exploreveg.org/files/2015/05/sofritas-burrito.jpeg"}',
-      '-t', tenant_id,
-      '-r', resource_group,
-      '-w', workspace,
-      '-s', service_principal_id,
-      '-p', service_principal_password,
-      '-u', subscription_id,
-      '-b', persistent_volume_path
-    ]
-  )
-  operations['profile'].after(operations['register'])
-
-  operations['deploy'] = dsl.ContainerOp(
-    name='deploy',
-    image='insert your image here',
-    command=['sh'],
-    arguments=[
-      '/scripts/deploy.sh',
-      '-n', model_name,
-      '-m', model_name,
-      '-i', '/scripts/inferenceconfig.json',
-      '-d', '/scripts/deploymentconfig.json',
-      '-t', tenant_id,
-      '-r', resource_group,
-      '-w', workspace,
-      '-s', service_principal_id,
-      '-p', service_principal_password,
-      '-u', subscription_id,
-      '-b', persistent_volume_path
-    ]
-  )
-  operations['deploy'].after(operations['profile'])'''
+  operations['register'].after(operations['training'])  
   for _, op_1 in operations.items():
     op_1.container.set_image_pull_policy("Always")
     op_1.add_volume(
@@ -127,7 +92,7 @@ def tacosandburritos_train(
           claim_name='azure-managed-disk')
       )
     ).add_volume_mount(k8s_client.V1VolumeMount(
-      mount_path='/mnt/azure', name='azure'))
+      mount_path='/mnt/azure', name='azure')) 
 
 if __name__ == '__main__':
   compiler.Compiler().compile(tacosandburritos_train, __file__ + '.tar.gz')
