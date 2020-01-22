@@ -1,0 +1,7 @@
+Pillow
+pathlib2
+requests
+azureml-sdk
+random
+sklearn.linear_model
+sklearn
