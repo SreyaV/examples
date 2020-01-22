@@ -120,6 +120,19 @@ def info(msg, char="#", width=75):
   print(char + "   %0*s" % ((-1 * width) + 5, msg) + char)
   print(char * width)
 
+def generate_hash(dfile, key):
+  print('Generating hash for {}'.format(dfile))
+  m = hmac.new(str.encode(key), digestmod=hashlib.sha256)
+  BUF_SIZE = 65536
+  with open(str(dfile), 'rb') as myfile:
+    while True:
+      data = myfile.read(BUF_SIZE)
+      if not data:
+        break
+      m.update(data)
+
+  return m.hexdigest()
+
 
 def run(output='model'):
   TRAIN_SET_LIMIT = 1000
@@ -164,10 +177,7 @@ if __name__ == "__main__":
   args = parser.parse_args()
 
   info('Using TensorFlow v.{}'.format(tf.__version__))
-<<<<<<< HEAD
 
-=======
->>>>>>> aba735929e4bbedd0420215da31458aef5af2447
   target_path = Path('/mnt/azure').resolve(strict=False).joinpath(args.outputs)
 
   args = {
