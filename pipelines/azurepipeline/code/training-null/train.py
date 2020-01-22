@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division, print_function
+from __future__ import absolute_import, division, print_function, unicode_literals
 import os
 import math
 import hmac
@@ -16,7 +16,6 @@ from azureml.core import Workspace
 from azureml.core.model import Model
 from azureml.core.authentication import ServicePrincipalAuthentication
 from sklearn.linear_model import LinearRegression
-from __future__ import absolute_import, division, print_function, unicode_literals
 from tensorflow import keras
 from tensorflow.keras import layers
 import numpy as np
