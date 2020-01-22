@@ -1,3 +1,4 @@
 pathlib2
 requests
 wget
+numpy
