@@ -184,7 +184,6 @@ if __name__ == "__main__":
     "output": str(target_path),
   }
 
-  dataset_signature = generate_hash(dataset, 'kf_pipeline')
   # printing out args for posterity
   for i in args:
     print('{} => {}'.format(i, args[i]))
