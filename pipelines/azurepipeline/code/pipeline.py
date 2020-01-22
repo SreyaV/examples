@@ -33,7 +33,7 @@ def tacosandburritos_train(
   # preprocess data
   operations['preprocess'] = dsl.ContainerOp(
     name='preprocess',
-    image='svangara.azurecr.io/preprocess:7',
+    image='svangara.azurecr.io/preprocess:1',
     command=['python'],
     arguments=[
       '/scripts/data.py',
@@ -48,7 +48,7 @@ def tacosandburritos_train(
   # train
   operations['training'] = dsl.ContainerOp(
     name='training',
-    image='svangara.azurecr.io/training:6',
+    image='svangara.azurecr.io/training:1',
     command=['python'],
     arguments=[
       '/scripts/train.py',
