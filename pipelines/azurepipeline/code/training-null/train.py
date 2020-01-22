@@ -165,9 +165,6 @@ if __name__ == "__main__":
 
   info('Using TensorFlow v.{}'.format(tf.__version__))
 
-  target_path = Path(args.base_path).resolve(strict=False).joinpath(args.outputs)
-
-  params = Path(args.base_path).joinpath('params.json')
 
   args = {
     "output": str(target_path),
