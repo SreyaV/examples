@@ -56,7 +56,7 @@ def tacosandburritos_train(
     ]
   )
   operations['training'].after(operations['preprocess'])
-'''  
+  '''  
   # register model
   operations['register'] = dsl.ContainerOp(
     name='register',
@@ -76,7 +76,7 @@ def tacosandburritos_train(
     ]
   )
   operations['register'].after(operations['training'])
-  '''
+
   operations['profile'] = dsl.ContainerOp(
     name='profile',
     image='insert your image here',
