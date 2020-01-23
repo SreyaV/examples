@@ -30,31 +30,6 @@ import matplotlib.pyplot as plt
 
 
 def get_ws():
-   # argparse stuff for model path and model name
-'''   parser = argparse.ArgumentParser(description='sanity check on model')
-  parser.add_argument('-b', '--base_path', help='directory to base folder', default='../../data')
-  parser.add_argument('-m', '--model', help='path to model file', default='/model/latest.h5')
-  parser.add_argument('-n', '--model_name', help='AML Model name', default='tacosandburritos')
-  parser.add_argument('-t', '--tenant_id', help='tenant_id')
-  parser.add_argument('-s', '--service_principal_id', help='service_principal_id')
-  parser.add_argument('-p', '--service_principal_password', help='service_principal_password')
-  parser.add_argument('-u', '--subscription_id', help='subscription_id')
-  parser.add_argument('-r', '--resource_group', help='resource_group')
-  parser.add_argument('-w', '--workspace', help='workspace')
-  args = parser.parse_args() 
-
-  auth_args = {
-    'tenant_id': args.tenant_id,
-    'service_principal_id': args.service_principal_id,
-    'service_principal_password': args.service_principal_password
-  }
-
-  ws_args = {
-    'auth': ServicePrincipalAuthentication(**auth_args),
-    'subscription_id': args.subscription_id,
-    'resource_group': args.resource_group
-  } '''
-
   auth_args = {
     'tenant_id': '72f988bf-86f1-41af-91ab-2d7cd011db47',
     'service_principal_id': 'bc6175f0-8591-4491-9254-7ff163901a21',
@@ -69,19 +44,6 @@ def get_ws():
 
   ws = Workspace.get('akannava', **ws_args)
   return ws
-
-'''
-  def run(mdl_path, model_name, ws, tgs):
-  print(ws.get_details())
-
-  print('\nSaving model {} to {}'.format(mdl_path, model_name))
-
-  # Model Path needs to be relative
-  mdl_path = relpath(mdl_path, '.')
-
-  Model.register(ws, model_name=model_name, model_path=mdl_path, tags=tgs)
-  print('Done!')
-'''
 
 
 
@@ -178,14 +140,6 @@ if __name__ == "__main__":
     print('{} => {}'.format(i, args[i]))
 
   run(**args)
-
-  """ args['model_signature'] = model_signature.upper()
-  args['model_type'] = 'tfv2-MobileNetV2'
-  print('Writing out params...', end='')
-  with open(str(params), 'w') as f:
-    json.dump(args, f)
-
-  print(' Saved to {}'.format(str(params))) """
 
   print('Made it to end of training')
 
