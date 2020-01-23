@@ -53,7 +53,7 @@ def tacosandburritos_train(
     arguments=[
       '/scripts/train.py',
       '--base_path', persistent_volume_path,
-      '--data', training_folder,
+      # '--data', training_folder,
       '--epochs', epochs,
       '--batch', batch,
       '--image_size', image_size,
