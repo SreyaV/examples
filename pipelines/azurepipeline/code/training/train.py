@@ -9,6 +9,8 @@ from random import shuffle
 from pathlib2 import Path
 import numpy as np
 import sys
+import sklearn
+from sklearn.linear_model import LinearRegression
 
 
 def info(msg, char="#", width=75):
@@ -130,8 +132,6 @@ if __name__ == "__main__":
   #       # currentPlace = list(currentPlace)
   #       TRAIN_OUTPUT.append(currentPlace)
   #     i += 1
-    
-  from sklearn.linear_model import LinearRegression
 
   predictor = LinearRegression(n_jobs=-1)
   predictor.fit(X=TRAIN_INPUT, y=TRAIN_OUTPUT)
