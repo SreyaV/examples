@@ -20,7 +20,7 @@ from sklearn.linear_model import LinearRegression
 from tensorflow import keras
 from tensorflow.keras import layers
 import numpy as np
-
+import mlflow
 
 
 
@@ -63,7 +63,7 @@ def get_ws():
     'resource_group': 'akannava'
   }
 
-  ws = Workspace.get(workspace, **ws_args)
+  ws = Workspace.get('akannava', **ws_args)
   return ws
 
 '''
@@ -113,6 +113,7 @@ def generate_hash(dfile, key):
 def run(output='model'):
 
   ws=get_ws()
+  #mlflow.set_tracking_uri(ws.get_mlflow_tracking_uri())
   exp = Experiment(ws, 'experiment with kf')
   with exp.start_logging() as run:
     #create outputs directory (might not have to do)
