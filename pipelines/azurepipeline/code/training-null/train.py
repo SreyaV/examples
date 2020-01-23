@@ -31,7 +31,7 @@ import matplotlib.pyplot as plt
 
 def get_ws():
    # argparse stuff for model path and model name
-"""   parser = argparse.ArgumentParser(description='sanity check on model')
+'''   parser = argparse.ArgumentParser(description='sanity check on model')
   parser.add_argument('-b', '--base_path', help='directory to base folder', default='../../data')
   parser.add_argument('-m', '--model', help='path to model file', default='/model/latest.h5')
   parser.add_argument('-n', '--model_name', help='AML Model name', default='tacosandburritos')
@@ -41,9 +41,9 @@ def get_ws():
   parser.add_argument('-u', '--subscription_id', help='subscription_id')
   parser.add_argument('-r', '--resource_group', help='resource_group')
   parser.add_argument('-w', '--workspace', help='workspace')
-  args = parser.parse_args() """
+  args = parser.parse_args() 
 
-"""   auth_args = {
+  auth_args = {
     'tenant_id': args.tenant_id,
     'service_principal_id': args.service_principal_id,
     'service_principal_password': args.service_principal_password
@@ -53,7 +53,7 @@ def get_ws():
     'auth': ServicePrincipalAuthentication(**auth_args),
     'subscription_id': args.subscription_id,
     'resource_group': args.resource_group
-  } """
+  } '''
 
   auth_args = {
     'tenant_id': '72f988bf-86f1-41af-91ab-2d7cd011db47',
