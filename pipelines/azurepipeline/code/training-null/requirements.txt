@@ -8,3 +8,4 @@ numpy
 mlflow
 matplotlib
 mlflow.azureml
+azureml-mlflow
