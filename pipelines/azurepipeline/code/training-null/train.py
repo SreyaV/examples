@@ -14,30 +14,59 @@ from random import randint
 import azureml
 from azureml.core import Workspace
 from azureml.core.model import Model
+from azureml.core import Experiment
 from azureml.core.authentication import ServicePrincipalAuthentication
 from sklearn.linear_model import LinearRegression
 from tensorflow import keras
 from tensorflow.keras import layers
 import numpy as np
 
-'''
-def get_ws(tenant_id, service_principal_id,
-           service_principal_password, subscription_id, resource_group, workspace):
-  auth_args = {
-    'tenant_id': tenant_id,
-    'service_principal_id': service_principal_id,
-    'service_principal_password': service_principal_password
+
+
+
+
+def get_ws():
+   # argparse stuff for model path and model name
+"""   parser = argparse.ArgumentParser(description='sanity check on model')
+  parser.add_argument('-b', '--base_path', help='directory to base folder', default='../../data')
+  parser.add_argument('-m', '--model', help='path to model file', default='/model/latest.h5')
+  parser.add_argument('-n', '--model_name', help='AML Model name', default='tacosandburritos')
+  parser.add_argument('-t', '--tenant_id', help='tenant_id')
+  parser.add_argument('-s', '--service_principal_id', help='service_principal_id')
+  parser.add_argument('-p', '--service_principal_password', help='service_principal_password')
+  parser.add_argument('-u', '--subscription_id', help='subscription_id')
+  parser.add_argument('-r', '--resource_group', help='resource_group')
+  parser.add_argument('-w', '--workspace', help='workspace')
+  args = parser.parse_args() """
+
+"""   auth_args = {
+    'tenant_id': args.tenant_id,
+    'service_principal_id': args.service_principal_id,
+    'service_principal_password': args.service_principal_password
   }
 
   ws_args = {
     'auth': ServicePrincipalAuthentication(**auth_args),
-    'subscription_id': subscription_id,
-    'resource_group': resource_group
+    'subscription_id': args.subscription_id,
+    'resource_group': args.resource_group
+  } """
+
+  auth_args = {
+    'tenant_id': '72f988bf-86f1-41af-91ab-2d7cd011db47',
+    'service_principal_id': 'bc6175f0-8591-4491-9254-7ff163901a21',
+    'service_principal_password': '?mGP@E1hGhU@aNty3=G3e53F:L.gMOVf'
   }
+
+  ws_args = {
+    'auth': ServicePrincipalAuthentication(**auth_args),
+    'subscription_id': 'ad203158-bc5d-4e72-b764-2607833a71dc',
+    'resource_group': 'akannava'
+  }
+
   ws = Workspace.get(workspace, **ws_args)
   return ws
 
-
+'''
   def run(mdl_path, model_name, ws, tgs):
   print(ws.get_details())
 
@@ -48,67 +77,11 @@ def get_ws(tenant_id, service_principal_id,
 
   Model.register(ws, model_name=model_name, model_path=mdl_path, tags=tgs)
   print('Done!')
-
-
-  if __name__ == "__main__":
-  # argparse stuff for model path and model name
-  parser = argparse.ArgumentParser(description='sanity check on model')
-  parser.add_argument('-b', '--base_path', help='directory to base folder', default='../../data')
-  parser.add_argument('-m', '--model', help='path to model file', default='/model/latest.h5')
-  parser.add_argument('-n', '--model_name', help='AML Model name', default='tacosandburritos')
-  parser.add_argument('-t', '--tenant_id', help='tenant_id')
-  parser.add_argument('-s', '--service_principal_id', help='service_principal_id')
-  parser.add_argument('-p', '--service_principal_password', help='service_principal_password')
-  parser.add_argument('-u', '--subscription_id', help='subscription_id')
-  parser.add_argument('-r', '--resource_group', help='resource_group')
-  parser.add_argument('-w', '--workspace', help='workspace')
-  args = parser.parse_args()
-
-  print('Azure ML SDK Version: {}'.format(azureml.core.VERSION))
-  args.model = 'model/' + args.model
-  model_path = str(Path(args.base_path).resolve(
-    strict=False).joinpath(args.model).resolve(strict=False))
-  params_path = str(Path(args.base_path).resolve(
-    strict=False).joinpath('params.json').resolve(strict=False))
-  wsrgs = {
-    'tenant_id': args.tenant_id,
-    'service_principal_id': args.service_principal_id,
-    'service_principal_password': args.service_principal_password,
-    'subscription_id': args.subscription_id,
-    'resource_group': args.resource_group,
-    'workspace': args.workspace
-  }
-  rgs = {
-    'mdl_path': model_path,
-    'model_name': args.model_name
-  }
-
-  # printing out args for posterity
-  for i in wsrgs:
-    if i == 'service_principal_password':
-      print('{} => **********'.format(i))
-    else:
-      print('{} => {}'.format(i, rgs[i]))
-
-  with(open(str(params_path), 'r')) as f:
-    tags = json.load(f)
-
-  print('\n\nUsing the following tags:')
-  for tag in tags:
-    print('{} => {}'.format(tag, tags[tag]))
-
-  rgs['tags'] = tags
-
-  workspc = get_ws(**wsrgs)
-  rgs['ws'] = workspc
-  run(**rgs)
-
-  # python register.py --model_path v --model_name c --tenant_id c
-  # --service_principal_id v --service_principal_password v
-  # --subscription_id v --resource_group x --workspace c
-
-
 '''
+
+
+
+
 
 #-----------------------------------------------------------------------------------------------------------------
 
@@ -138,52 +111,59 @@ def generate_hash(dfile, key):
 
 
 def run(output='model'):
-  
-  model = tf.keras.Sequential()
-  # Adds a densely-connected layer with 64 units to the model:
-  model.add(layers.Dense(64, activation='relu'))
-  # Add another:
-  model.add(layers.Dense(64, activation='relu'))
-  # Add a softmax layer with 10 output units:
-  model.add(layers.Dense(10, activation='softmax'))
 
-  layers.Dense(64, activation='sigmoid')
+  ws=get_ws()
+  exp = Experiment(ws, 'experiment with kf')
+  with exp.start_logging() as run:
+    #create outputs directory (might not have to do)
+    #save file to outputs/whatever
+    #use that as path to register
+    
+    model = tf.keras.Sequential()
+    # Adds a densely-connected layer with 64 units to the model:
+    model.add(layers.Dense(64, activation='relu'))
+    # Add another:
+    model.add(layers.Dense(64, activation='relu'))
+    # Add a softmax layer with 10 output units:
+    model.add(layers.Dense(10, activation='softmax'))
 
-  model = tf.keras.Sequential([
-  # Adds a densely-connected layer with 64 units to the model:
-  layers.Dense(64, activation='relu', input_shape=(32,)),
-  # Add another:
-  layers.Dense(64, activation='relu'),
-  # Add a softmax layer with 10 output units:
-  layers.Dense(10, activation='softmax')])
+    layers.Dense(64, activation='sigmoid')
 
-  model.compile(optimizer=tf.keras.optimizers.Adam(0.01),
-                loss='categorical_crossentropy',
-                metrics=['accuracy'])
+    model = tf.keras.Sequential([
+    # Adds a densely-connected layer with 64 units to the model:
+    layers.Dense(64, activation='relu', input_shape=(32,)),
+    # Add another:
+    layers.Dense(64, activation='relu'),
+    # Add a softmax layer with 10 output units:
+    layers.Dense(10, activation='softmax')])
 
-  model.summary()
+    model.compile(optimizer=tf.keras.optimizers.Adam(0.01),
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
 
-  data = np.random.random((1000, 32))
-  labels = np.random.random((1000, 10))
-  info('Training')
-  model.fit(data, labels, epochs=10, batch_size=32)
+    model.summary()
 
-  # save model
-  info('Saving Model')
+    data = np.random.random((1000, 32))
+    labels = np.random.random((1000, 10))
+    info('Training')
+    model.fit(data, labels, epochs=10, batch_size=32)
 
-  # check existence of base model folder
-  output = check_dir(output)
+    # save model
+    info('Saving Model')
 
-  print('Serializing into saved_model format')
-  tf.saved_model.save(model, str(output))
-  print('Done!')
+    # check existence of base model folder
+    output = check_dir(output)
 
-  # add time prefix folder
-  file_output = str(Path(output).joinpath('latest.h5'))
-  print('Serializing h5 model to:\n{}'.format(file_output))
-  model.save(file_output)
+    print('Serializing into saved_model format')
+    tf.saved_model.save(model, str(output))
+    print('Done!')
 
-  return generate_hash(file_output, 'kf_pipeline')
+    # add time prefix folder
+    file_output = str(Path(output).joinpath('latest.h5'))
+    print('Serializing h5 model to:\n{}'.format(file_output))
+    model.save(file_output)
+
+    return generate_hash(file_output, 'kf_pipeline')
 
 
 
