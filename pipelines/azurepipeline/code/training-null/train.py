@@ -21,8 +21,12 @@ from tensorflow import keras
 from tensorflow.keras import layers
 import numpy as np
 import mlflow
-
-
+from sklearn.datasets import load_diabetes
+from sklearn.linear_model import Ridge
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
+import matplotlib
+import matplotlib.pyplot as plt
 
 
 def get_ws():
@@ -111,60 +115,46 @@ def generate_hash(dfile, key):
 
 
 def run(output='model'):
-
+  print("SDK version:", azureml.core.VERSION)
   ws=get_ws()
-  #mlflow.set_tracking_uri(ws.get_mlflow_tracking_uri())
-  exp = Experiment(ws, 'experiment with kf')
-  with exp.start_logging() as run:
-    #create outputs directory (might not have to do)
-    #save file to outputs/whatever
-    #use that as path to register
+  mlflow.set_tracking_uri(ws.get_mlflow_tracking_uri())
+  mlflow.set_experiment('experiment-with-kf')
+  #exp = Experiment(ws, 'experiment with kf')
+
+  X, y = load_diabetes(return_X_y = True)
+  columns = ['age', 'gender', 'bmi', 'bp', 's1', 's2', 's3', 's4', 's5', 's6']
+  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+  data = {
+    "train":{"X": X_train, "y": y_train},        
+    "test":{"X": X_test, "y": y_test}
+  }
+
+  print ("Data contains", len(data['train']['X']), "training samples and",len(data['test']['X']), "test samples")
+
+  model_save_path = 'model'
+
+  with mlflow.start_run() as run:
+    # Log the algorithm parameter alpha to the run
+    mlflow.log_metric('alpha', 0.03)
+    # Create, fit, and test the scikit-learn Ridge regression model
+    regression_model = Ridge(alpha=0.03)
+    regression_model.fit(data['train']['X'], data['train']['y'])
+    preds = regression_model.predict(data['test']['X'])
+
+    # Log mean squared error
+    print('Mean Squared Error is', mean_squared_error(data['test']['y'], preds))
+    mlflow.log_metric('mse', mean_squared_error(data['test']['y'], preds))
     
-    model = tf.keras.Sequential()
-    # Adds a densely-connected layer with 64 units to the model:
-    model.add(layers.Dense(64, activation='relu'))
-    # Add another:
-    model.add(layers.Dense(64, activation='relu'))
-    # Add a softmax layer with 10 output units:
-    model.add(layers.Dense(10, activation='softmax'))
+    # Save the model to the outputs directory for capture
+    mlflow.sklearn.log_model(regression_model,model_save_path)
+    
+    # Plot actuals vs predictions and save the plot within the run
+    fig = plt.figure(1)
+    idx = np.argsort(data['test']['y'])
+    plt.plot(data['test']['y'][idx],preds[idx])
+    fig.savefig("actuals_vs_predictions.png")
+    mlflow.log_artifact("actuals_vs_predictions.png")
 
-    layers.Dense(64, activation='sigmoid')
-
-    model = tf.keras.Sequential([
-    # Adds a densely-connected layer with 64 units to the model:
-    layers.Dense(64, activation='relu', input_shape=(32,)),
-    # Add another:
-    layers.Dense(64, activation='relu'),
-    # Add a softmax layer with 10 output units:
-    layers.Dense(10, activation='softmax')])
-
-    model.compile(optimizer=tf.keras.optimizers.Adam(0.01),
-                  loss='categorical_crossentropy',
-                  metrics=['accuracy'])
-
-    model.summary()
-
-    data = np.random.random((1000, 32))
-    labels = np.random.random((1000, 10))
-    info('Training')
-    model.fit(data, labels, epochs=10, batch_size=32)
-
-    # save model
-    info('Saving Model')
-
-    # check existence of base model folder
-    output = check_dir(output)
-
-    print('Serializing into saved_model format')
-    tf.saved_model.save(model, str(output))
-    print('Done!')
-
-    # add time prefix folder
-    file_output = str(Path(output).joinpath('latest.h5'))
-    print('Serializing h5 model to:\n{}'.format(file_output))
-    model.save(file_output)
-
-    return generate_hash(file_output, 'kf_pipeline')
 
 
 
@@ -187,14 +177,16 @@ if __name__ == "__main__":
   for i in args:
     print('{} => {}'.format(i, args[i]))
 
-  model_signature = run(**args)
+  run(**args)
 
-  args['model_signature'] = model_signature.upper()
+  """ args['model_signature'] = model_signature.upper()
   args['model_type'] = 'tfv2-MobileNetV2'
   print('Writing out params...', end='')
   with open(str(params), 'w') as f:
     json.dump(args, f)
 
-  print(' Saved to {}'.format(str(params)))
+  print(' Saved to {}'.format(str(params))) """
+
+  print('Made it to end of training')
 
   # python train.py -o model 

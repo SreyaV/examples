@@ -56,7 +56,7 @@ def tacosandburritos_train(
     ]
   )
   operations['training'].after(operations['preprocess'])
-  
+'''  
   # register model
   operations['register'] = dsl.ContainerOp(
     name='register',
