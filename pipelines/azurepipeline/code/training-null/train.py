@@ -27,7 +27,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 import matplotlib
 import matplotlib.pyplot as plt
-import azureml-mlflow
+import mlflow.azureml
 import mlflow.sklearn
 
 
