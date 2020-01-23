@@ -5,3 +5,5 @@ azureml-sdk
 scikit-learn
 future
 numpy
+mlflow
+matplotlib
