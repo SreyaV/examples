@@ -5,7 +5,8 @@ import json
 import azureml.core
 from azureml.core import Workspace, Experiment, Run
 from azureml.core import ScriptRunConfig
-
+from azureml.mlflow import _setup_remote
+import mlflow 
 
 def run_command(program_and_args, # ['python', 'foo.py', '3']
                 working_dir=None, # Defaults to current directory
@@ -40,7 +41,7 @@ if __name__ == "__main__":
     experiment_name = sys.argv[1]
     run_name = sys.argv[3][:-3] # should be the file name
 
-
+    env_dictionary = {"MLFLOW_EXPERIMENT_NAME" = experiment_name}
     if os.path.exists(job_info_path):
         # get parent run id, experiment name from file & workspace obj
         # create child run (id )
@@ -52,16 +53,23 @@ if __name__ == "__main__":
         exp = Experiment(workspace=ws, name=experiment_name)
         run = Run(exp, run_id)
         run.child_run(name=run_name) # TODO: add the step's name 
+        # log environment variables
+        env_dictionary["MLFLOW_EXPERIMENT_ID"] = exp._id
+        env_dictionary["MLFLOW_RUN_ID"] = run_id
     else:
         # start run
         ws = Workspace.from_config()
         exp = Experiment(workspace=ws, name=experiment_name) 
-        run = exp.start_logging()
+        run = exp.start_logging() 
+        _setup_remote(run)
         job_info_dict = {"run_id": run._run_id, "experiment_name": exp.name, "experiment_id": exp._id}
         json = json.dumps(job_info_dict)
         f = open(job_info_path,"w")
         f.write(json)
         f.close()
+        # log environment variables
+        env_dictionary["MLFLOW_EXPERIMENT_ID"] = exp._id
+        env_dictionary["MLFLOW_RUN_ID"] = run_id
     
-    ret, _ = run_command(sys.argv[2:])
+    ret, _ = run_command(sys.argv[2:], env=env_dictionary)
     # ret, _ = run_command("python preprocess/data.py")
