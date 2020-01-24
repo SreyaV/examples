@@ -29,6 +29,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import mlflow.azureml
 import mlflow.sklearn
+import os  
 
 
 def get_ws():
@@ -144,5 +145,5 @@ if __name__ == "__main__":
   run(**args)
 
   print('Made it to end of training')
-
+  print(os.environ)
   # python train.py -o model 
