@@ -16,7 +16,7 @@ def get_ws():
     'service_principal_password': os.environ.get(AZ_CLIENT_SECRET)
   }
  
-  ws = Workspace.from_config('/mnt/azure', auth=ServicePrincipalAuthentication(**auth_args))
+  ws = Workspace.get(name=os.environ.get(AZ_NAME), auth=ServicePrincipalAuthentication(**auth_args, subscription_id=os.environ.get(AZ_SUBSCRIPTION_ID), resource_group=os.environ.get(AZ_RESOURCE_GROUP))
   return ws
 
 def run_command(program_and_args, # ['python', 'foo.py', '3']
