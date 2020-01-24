@@ -33,4 +33,4 @@ def run_command(program_and_args, # ['python', 'foo.py', '3']
 
 if __name__ == "__main__":
     # ret, _ = run_command(sys.argv[1:])
-    ret, _ = run_command("python", working_dir="\Users\v-urmust\Documents\examples\pipelines\azurepipeline\code\preprocess\data.py")
+    ret, _ = run_command("python", working_dir="/home/svangara/kubetest/test/examples/pipelines/azurepipeline/code/training-null/train.py")
