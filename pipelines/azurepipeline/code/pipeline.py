@@ -2,10 +2,10 @@
 from kubernetes import client as k8s_client
 import kfp.dsl as dsl
 import kfp.compiler as compiler
-from . import _container_op
-from . import _resource_op
-from . import _ops_group
-
+from kfp.dsl import _container_op
+from kfp.dsl import _resource_op
+from kfp.dsl import _ops_group
+from kubernetes.client.models import V1EnvVar
 
 
 from azureml.core import Workspace
@@ -25,9 +25,10 @@ def transformer(containerOp):
         claim_name='azure-managed-disk')
     )
   ).add_volume_mount(k8s_client.V1VolumeMount(
-    mount_path='/mnt/azure', name='azure')).add_env_variable(V1EnvVar(name='AZ_NAME', value=ws.name())
-    ).add_env_variable(V1EnvVar(name='AZ_SUBSCRIPTION_ID', value=ws.subscription_id())
-    ).add_env_variable(V1EnvVar(name='AZ_RESOURCE_GROUP', value=ws.resource_group()))
+    mount_path='/mnt/azure', name='azure'))
+  containerOp.container.add_env_variable(V1EnvVar(name='AZ_NAME', value=ws.name)
+    ).add_env_variable(V1EnvVar(name='AZ_SUBSCRIPTION_ID', value=ws.subscription_id)
+    ).add_env_variable(V1EnvVar(name='AZ_RESOURCE_GROUP', value=ws.resource_group))
 
   return containerOp
 
