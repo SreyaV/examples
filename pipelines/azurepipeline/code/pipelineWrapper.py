@@ -5,8 +5,19 @@ import json
 import azureml.core
 from azureml.core import Workspace, Experiment, Run
 from azureml.core import ScriptRunConfig
-from azureml.mlflow import _setup_remote
+import azureml.mlflow
+from azureml.mlflow import _setup_remote, get_mlflow_tracking_uri
 import mlflow 
+
+def get_ws():
+  auth_args = {
+    'tenant_id': os.environ.get({AZ_TENANT_ID),
+    'service_principal_id': os.environ.get(AZ_CLIENT_ID),
+    'service_principal_password': os.environ.get(AZ_CLIENT_SECRET)
+  }
+ 
+  ws = Workspace.from_config('/mnt/azure', auth=ServicePrincipalAuthentication(**auth_args))
+  return ws
 
 def run_command(program_and_args, # ['python', 'foo.py', '3']
                 working_dir=None, # Defaults to current directory
@@ -35,13 +46,12 @@ def run_command(program_and_args, # ['python', 'foo.py', '3']
 
     return retcode, output
 
-
 if __name__ == "__main__":
     job_info_path = "parent_run.json"
     experiment_name = sys.argv[1]
     run_name = sys.argv[3][:-3] # should be the file name
 
-    env_dictionary = {"MLFLOW_EXPERIMENT_NAME" = experiment_name}
+    env_dictionary = {"MLFLOW_EXPERIMENT_NAME": experiment_name} 
     if os.path.exists(job_info_path):
         # get parent run id, experiment name from file & workspace obj
         # create child run (id )
@@ -49,16 +59,17 @@ if __name__ == "__main__":
             job_info_dict = json.load(f)
         print("dictionary read from file " + job_info_dict+ "\n")
         run_id = job_info_dict["run_id"]
-        ws = Workspace.from_config() # TODO set path and auth 
+        ws = get_ws() # TODO set path and auth 
         exp = Experiment(workspace=ws, name=experiment_name)
         run = Run(exp, run_id)
         run.child_run(name=run_name) # TODO: add the step's name 
         # log environment variables
         env_dictionary["MLFLOW_EXPERIMENT_ID"] = exp._id
         env_dictionary["MLFLOW_RUN_ID"] = run_id
+        env_dictionary["MLFLOW_TRACKING_URI"] = get_mlflow_tracking_uri(ws)
     else:
         # start run
-        ws = Workspace.from_config()
+        ws = get_ws()
         exp = Experiment(workspace=ws, name=experiment_name) 
         run = exp.start_logging() 
         _setup_remote(run)
@@ -70,6 +81,7 @@ if __name__ == "__main__":
         # log environment variables
         env_dictionary["MLFLOW_EXPERIMENT_ID"] = exp._id
         env_dictionary["MLFLOW_RUN_ID"] = run_id
+        env_dictionary["MLFLOW_TRACKING_URI"] = get_mlflow_tracking_uri(ws)
     
     ret, _ = run_command(sys.argv[2:], env=env_dictionary)
     # ret, _ = run_command("python preprocess/data.py")
