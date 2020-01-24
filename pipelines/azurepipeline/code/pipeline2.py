@@ -36,6 +36,8 @@ def tacosandburritos_train(
     image='svangara.azurecr.io/preprocess:2',
     command=['python'],
     arguments=[
+      'pipelineWrapper.py',
+      'python',
       '/scripts/data.py',
       '--base_path', persistent_volume_path,
       '--data', training_folder,
@@ -43,6 +45,15 @@ def tacosandburritos_train(
       '--img_size', image_size,
       '--zipfile', data_download
     ]
+    # command=['python'],
+    # arguments=[
+    #   '/scripts/data.py',
+    #   '--base_path', persistent_volume_path,
+    #   '--data', training_folder,
+    #   # '--target', training_dataset,
+    #   '--img_size', image_size,
+    #   '--zipfile', data_download
+    # ]
   )
 
   # train
@@ -51,6 +62,8 @@ def tacosandburritos_train(
     image='svangara.azurecr.io/training:2',
     command=['python'],
     arguments=[
+      'pipelineWrapper.py',
+      'python',
       '/scripts/train.py',
       '--base_path', persistent_volume_path,
       # '--data', training_folder,
