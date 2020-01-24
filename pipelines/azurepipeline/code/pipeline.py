@@ -56,12 +56,12 @@ def tacosandburritos_train(
 
 
   # train
-  operations['training'] = dsl.ContainerOp(
-    name='training',
-    image='svangara.azurecr.io/training:3',
+  operations['test'] = dsl.ContainerOp(
+    name='test',
+    image='svangara.azurecr.io/test:1',
     command=['python'],
     arguments=[
-      '/scripts/train.py',
+      '/scripts/test.py',
       '--outputs', model_folder
     ]
   )
