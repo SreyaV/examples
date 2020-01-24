@@ -1,2 +1,2 @@
-  import os 
-  print(os.environ)
+import os 
+print(os.environ)

@@ -32,24 +32,24 @@ import mlflow.sklearn
 import os  
 
 
-'''  
-auth_args = {
-    'tenant_id': '72f988bf-86f1-41af-91ab-2d7cd011db47',
-    'service_principal_id': 'bc6175f0-8591-4491-9254-7ff163901a21',
-    'service_principal_password': '?mGP@E1hGhU@aNty3=G3e53F:L.gMOVf'
+
+
+
+def get_ws():
+  auth_args = {
+    'tenant_id': os.environ.get({AZ_TENANT_ID),
+    'service_principal_id': os.environ.get(AZ_CLIENT_ID),
+    'service_principal_password': os.environ.get(AZ_CLIENT_SECRET)
   }
 
   ws_args = {
     'auth': ServicePrincipalAuthentication(**auth_args),
-    'subscription_id': 'ad203158-bc5d-4e72-b764-2607833a71dc',
-    'resource_group': 'akannava'
+    'subscription_id': os.environ.get(AZ_SUBSCRIPTION_ID,
+    'resource_group': os.environ.get(AZ_RESOURCE_GROUP)
   }
-'''
 
-
-def get_ws():
   ws = Workspace.from_config()
-  #ws = Workspace.get('akannava', **ws_args)
+  ws = Workspace.get(os.environ.get(AZ_RESOURCE_GROUP), **ws_args)
   return ws
 
 

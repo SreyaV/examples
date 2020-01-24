@@ -1,6 +1,4 @@
-FROM tensorflow/tensorflow:2.0.0a0-gpu-py3
-
-# pip install
+FROM python:3.8-slim-buster
 COPY requirements.txt /scripts/requirements.txt
 RUN pip install -r /scripts/requirements.txt
 

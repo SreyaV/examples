@@ -6,6 +6,7 @@ from kfp.dsl import Pipeline, ContainerOp
 from kfp.azure import use_azure_secret
 import unittest
 import inspect
+import os
 
 def transformer(op1):
     op1 = op1.apply(use_azure_secret('azcreds'))
