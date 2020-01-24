@@ -10,7 +10,7 @@ import numpy as np
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser(description='data cleaning for binary image task')
-  parser.add_argument('-b', '--base_path', help='directory to base data', default='../../data')
+  parser.add_argument('-b', '--base_path', help='directory to base data', default='../data')
   parser.add_argument('-d', '--data', help='directory to training data', default='train')
   parser.add_argument('-t', '--target', help='target file to hold good data', default='trainInput.txt')
   parser.add_argument('-o', '--target2', help='target file to hold output data', default='trainOutput.txt')
