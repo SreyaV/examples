@@ -1,7 +1,6 @@
 Pillow
 pathlib2
 requests
-azureml-sdk
 scikit-learn
 future
 numpy

@@ -6,17 +6,20 @@ import azureml.core
 from azureml.core import Workspace, Experiment, Run
 from azureml.core import ScriptRunConfig
 import azureml.mlflow
-from azureml.mlflow import _setup_remote, get_mlflow_tracking_uri
+from azureml.mlflow import _setup_remote, _get_mlflow_tracking_uri
 import mlflow 
+from azureml.core.authentication import ServicePrincipalAuthentication
+
+print(os.environ)
 
 def get_ws():
   auth_args = {
-    'tenant_id': os.environ.get({AZ_TENANT_ID),
-    'service_principal_id': os.environ.get(AZ_CLIENT_ID),
-    'service_principal_password': os.environ.get(AZ_CLIENT_SECRET)
+    'tenant_id': os.environ.get('AZ_TENANT_ID'),
+    'service_principal_id': os.environ.get('AZ_CLIENT_ID'),
+    'service_principal_password': os.environ.get('AZ_CLIENT_SECRET')
   }
  
-  ws = Workspace.get(name=os.environ.get(AZ_NAME), auth=ServicePrincipalAuthentication(**auth_args, subscription_id=os.environ.get(AZ_SUBSCRIPTION_ID), resource_group=os.environ.get(AZ_RESOURCE_GROUP))
+  ws = Workspace.get(name=os.environ.get('AZ_NAME'), auth=ServicePrincipalAuthentication(**auth_args), subscription_id=os.environ.get('AZ_SUBSCRIPTION_ID'), resource_group=os.environ.get('AZ_RESOURCE_GROUP'))
   return ws
 
 def run_command(program_and_args, # ['python', 'foo.py', '3']
@@ -66,7 +69,7 @@ if __name__ == "__main__":
         # log environment variables
         env_dictionary["MLFLOW_EXPERIMENT_ID"] = exp._id
         env_dictionary["MLFLOW_RUN_ID"] = run_id
-        env_dictionary["MLFLOW_TRACKING_URI"] = get_mlflow_tracking_uri(ws)
+        env_dictionary["MLFLOW_TRACKING_URI"] = _get_mlflow_tracking_uri(ws)
     else:
         # start run
         ws = get_ws()
@@ -81,7 +84,7 @@ if __name__ == "__main__":
         # log environment variables
         env_dictionary["MLFLOW_EXPERIMENT_ID"] = exp._id
         env_dictionary["MLFLOW_RUN_ID"] = run_id
-        env_dictionary["MLFLOW_TRACKING_URI"] = get_mlflow_tracking_uri(ws)
+        env_dictionary["MLFLOW_TRACKING_URI"] = _get_mlflow_tracking_uri(ws)
     
     ret, _ = run_command(sys.argv[2:], env=env_dictionary)
     # ret, _ = run_command("python preprocess/data.py")
