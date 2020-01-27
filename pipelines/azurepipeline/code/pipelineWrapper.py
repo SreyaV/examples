@@ -7,7 +7,7 @@ import azureml.core
 from azureml.core import Workspace, Experiment, Run
 from azureml.core import ScriptRunConfig
 import azureml.mlflow
-from azureml.mlflow import _setup_remote, _get_mlflow_tracking_uri
+from azureml.mlflow import _get_mlflow_tracking_uri
 from azureml.core.authentication import ServicePrincipalAuthentication
 
 print(os.environ)
@@ -80,7 +80,6 @@ if __name__ == "__main__":
         exp = Experiment(workspace=ws, name=experiment_name) 
         run = exp.start_logging(snapshot_directory=None) 
         run.child_run(name=run_name) # TODO: add the step's name 
-       # _setup_remote(run)
         job_info_dict = {"run_id": run._run_id, "experiment_name": exp.name, "experiment_id": exp._id}
         json = json.dumps(job_info_dict)
         with open(job_info_path,"w") as f:
