@@ -15,7 +15,7 @@ ws=Workspace.from_config()
 # transforms a given container op to use the pipelineWrapper
 # in each step of the pipeline
 def transformer(containerOp):
-  containerOp.arguments = ['/scripts/pipelineWrapper.py', 'Tacos vs. Burritos', 'python'] + containerOp.arguments
+  containerOp.arguments = ['/scripts/pipelineWrapper.py', 'test', 'python'] + containerOp.arguments
   # shouldn't hard code this experiment name
   
   containerOp.container.set_image_pull_policy("Always")
@@ -36,10 +36,10 @@ def transformer(containerOp):
 
 
 @dsl.pipeline(
-  name='Tacos vs. Burritos',
+  name='test',
   description='Simple TF CNN'
 )
-def tacosandburritos_train(
+def test_train(
 ):
   """Pipeline steps"""
 
@@ -48,7 +48,7 @@ def tacosandburritos_train(
   epochs = 5
   batch = 32
   learning_rate = 0.0001
-  model_name = 'tacosandburritos'
+  model_name = 'test'
   profile_name = 'tacoprofile'
   operations = {}
   image_size = 160
@@ -71,4 +71,4 @@ def tacosandburritos_train(
   dsl.get_pipeline_conf().add_op_transformer(transformer)
 
 if __name__ == '__main__':
-  compiler.Compiler().compile(tacosandburritos_train, __file__ + '.tar.gz')
+  compiler.Compiler().compile(test_train, __file__ + '.tar.gz')
