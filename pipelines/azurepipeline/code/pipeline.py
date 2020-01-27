@@ -58,7 +58,7 @@ def tacosandburritos_train(
   # train
   operations['train'] = dsl.ContainerOp(
     name='train',
-    image='svangara.azurecr.io/train:1',
+    image='svangara.azurecr.io/training:1',
     command=['python'],
     arguments=[
       '/scripts/train.py',
