@@ -2,15 +2,18 @@ import sys
 import os
 import subprocess
 import json 
+import mlflow 
 import azureml.core
 from azureml.core import Workspace, Experiment, Run
 from azureml.core import ScriptRunConfig
 import azureml.mlflow
 from azureml.mlflow import _setup_remote, _get_mlflow_tracking_uri
-import mlflow 
 from azureml.core.authentication import ServicePrincipalAuthentication
 
 print(os.environ)
+print(os.getcwd())
+print(os.path.dirname('/scripts/train.py'))
+print(sys.path)
 
 def get_ws():
   auth_args = {
@@ -51,6 +54,7 @@ def run_command(program_and_args, # ['python', 'foo.py', '3']
 
 if __name__ == "__main__":
     job_info_path = "parent_run.json"
+    print(sys.argv)
     experiment_name = sys.argv[1]
     run_name = sys.argv[3][:-3] # should be the file name
 
@@ -74,17 +78,18 @@ if __name__ == "__main__":
         # start run
         ws = get_ws()
         exp = Experiment(workspace=ws, name=experiment_name) 
-        run = exp.start_logging() 
-        _setup_remote(run)
+        run = exp.start_logging(snapshot_directory=None) 
+        run.child_run(name=run_name) # TODO: add the step's name 
+       # _setup_remote(run)
         job_info_dict = {"run_id": run._run_id, "experiment_name": exp.name, "experiment_id": exp._id}
         json = json.dumps(job_info_dict)
-        f = open(job_info_path,"w")
-        f.write(json)
-        f.close()
+        with open(job_info_path,"w") as f:
+            f.write(json)
+            f.close()
         # log environment variables
         env_dictionary["MLFLOW_EXPERIMENT_ID"] = exp._id
-        env_dictionary["MLFLOW_RUN_ID"] = run_id
+        env_dictionary["MLFLOW_RUN_ID"] = run._run_id
         env_dictionary["MLFLOW_TRACKING_URI"] = _get_mlflow_tracking_uri(ws)
     
-    ret, _ = run_command(sys.argv[2:], env=env_dictionary)
+    ret, _ = run_command([sys.executable] + sys.argv[3:], env=env_dictionary)
     # ret, _ = run_command("python preprocess/data.py")

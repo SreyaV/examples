@@ -1,7 +1,5 @@
 from sklearn.linear_model import LinearRegression
-
-
-
+import random
 
 def run(output='model'):
     TRAIN_SET_LIMIT = 1000
@@ -10,9 +8,9 @@ def run(output='model'):
     TRAIN_INPUT = list()
     TRAIN_OUTPUT = list()
     for i in range(TRAIN_SET_COUNT):
-        a = randint(0, TRAIN_SET_LIMIT)
-        b = randint(0, TRAIN_SET_LIMIT)
-        c = randint(0, TRAIN_SET_LIMIT)
+        a = random.randint(0, TRAIN_SET_LIMIT)
+        b = random.randint(0, TRAIN_SET_LIMIT)
+        c = random.randint(0, TRAIN_SET_LIMIT)
         op = a + (2*b) + (3*c)
         TRAIN_INPUT.append([a, b, c])
         TRAIN_OUTPUT.append(op)

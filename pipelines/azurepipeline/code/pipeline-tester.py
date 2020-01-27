@@ -1,53 +1,95 @@
-"""Main pipeline file"""
-from kubernetes import client as k8s_client
-import kfp.dsl as dsl
-import kfp.compiler as compiler
-from kfp.dsl import Pipeline, ContainerOp
-from kfp.azure import use_azure_secret
-import unittest
-import inspect
+import sys
 import os
+import subprocess
+import json 
+import mlflow 
+import azureml.core
+from azureml.core import Workspace, Experiment, Run
+from azureml.core import ScriptRunConfig
+import azureml.mlflow
+from azureml.mlflow import _setup_remote, _get_mlflow_tracking_uri
+from azureml.core.authentication import ServicePrincipalAuthentication
 
-def transformer(op1):
-    op1 = op1.apply(use_azure_secret('azcreds'))
-    assert len(op1.env_variables) == 4
-    index = 0
-    for expected in ['AZ_SUBSCRIPTION_ID', 'AZ_TENANT_ID', 'AZ_CLIENT_ID', 'AZ_CLIENT_SECRET']:
-        print(op1.env_variables[index].name)
-        print(op1.env_variables[index].value_from.secret_key_ref.name)
-        print(op1.env_variables[index].value_from.secret_key_ref.key)
-        index += 1
-    #containerOp.arguments = 
-    return op1
+print(os.environ)
+print(os.getcwd())
+print(os.path.dirname('/scripts/train.py'))
+print(sys.path)
 
-@dsl.pipeline(
-  name='Auth Test KF',
-  description='Getting secrets from kf deployment'
-)
-def tester_train():
-  """Pipeline steps"""
-  operations = {}
+def get_ws():
+  auth_args = {
+    'tenant_id': os.environ.get('AZ_TENANT_ID'),
+    'service_principal_id': os.environ.get('AZ_CLIENT_ID'),
+    'service_principal_password': os.environ.get('AZ_CLIENT_SECRET')
+  }
+ 
+  ws = Workspace.get(name=os.environ.get('AZ_NAME'), auth=ServicePrincipalAuthentication(**auth_args), subscription_id=os.environ.get('AZ_SUBSCRIPTION_ID'), resource_group=os.environ.get('AZ_RESOURCE_GROUP'))
+  return ws
 
-  operations['test'] = dsl.ContainerOp(
-    name='test',
-    image='svangara.azurecr.io/test:1',
-    command=['python'],
-    arguments=[
-      '/scripts/test.py',
-    ]
-  )
+def run_command(program_and_args, # ['python', 'foo.py', '3']
+                working_dir=None, # Defaults to current directory
+                env=None):
 
-  for _, op_1 in operations.items():
-    op_1.container.set_image_pull_policy("Always")
-    op_1.add_volume(
-      k8s_client.V1Volume(
-        name='azure',
-        persistent_volume_claim=k8s_client.V1PersistentVolumeClaimVolumeSource(
-          claim_name='azure-managed-disk')
-      )
-    ).add_volume_mount(k8s_client.V1VolumeMount(
-      mount_path='/mnt/azure', name='azure'))
+    if working_dir is None:
+        working_dir = os.getcwd()
 
-  dsl.get_pipeline_conf().add_op_transformer(transformer)
-if __name__ == '__main__':
-  compiler.Compiler().compile(tester_train, __file__ + '.tar.gz')
+    output = ""
+    process = subprocess.Popen(program_and_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=working_dir, shell=False, env=env)
+    for line in process.stdout:
+        line = line.decode("utf-8").rstrip()
+        if line and line.strip():
+            # Stream the output
+            sys.stdout.write(line)
+            sys.stdout.write('\n')
+            # Save it for later too
+            output += line
+            output += '\n'
+
+    process.communicate()
+    retcode = process.poll()
+
+    if retcode:
+        raise subprocess.CalledProcessError(retcode, process.args, output=output, stderr=process.stderr)
+
+    return retcode, output
+
+if __name__ == "__main__":
+    job_info_path = "parent_run.json"
+    print(sys.argv)
+    experiment_name = sys.argv[1]
+    run_name = sys.argv[3][:-3] # should be the file name
+
+    env_dictionary = {"MLFLOW_EXPERIMENT_NAME": experiment_name} 
+    if os.path.exists(job_info_path):
+        # get parent run id, experiment name from file & workspace obj
+        # create child run (id )
+        with open(job_info_path, 'r') as f:
+            job_info_dict = json.load(f)
+        print("dictionary read from file " + job_info_dict+ "\n")
+        run_id = job_info_dict["run_id"]
+        ws = get_ws() # TODO set path and auth 
+        exp = Experiment(workspace=ws, name=experiment_name)
+        run = Run(exp, run_id)
+        run.child_run(name=run_name) # TODO: add the step's name 
+        # log environment variables
+        env_dictionary["MLFLOW_EXPERIMENT_ID"] = exp._id
+        env_dictionary["MLFLOW_RUN_ID"] = run_id
+        env_dictionary["MLFLOW_TRACKING_URI"] = _get_mlflow_tracking_uri(ws)
+    else:
+        # start run
+        ws = get_ws()
+        exp = Experiment(workspace=ws, name=experiment_name) 
+        run = exp.start_logging(snapshot_directory=None) 
+        run.child_run(name=run_name) # TODO: add the step's name 
+       # _setup_remote(run)
+        job_info_dict = {"run_id": run._run_id, "experiment_name": exp.name, "experiment_id": exp._id}
+        json = json.dumps(job_info_dict)
+        with open(job_info_path,"w") as f:
+            f.write(json)
+            f.close()
+        # log environment variables
+        env_dictionary["MLFLOW_EXPERIMENT_ID"] = exp._id
+        env_dictionary["MLFLOW_RUN_ID"] = run._run_id
+        env_dictionary["MLFLOW_TRACKING_URI"] = _get_mlflow_tracking_uri(ws)
+    
+    ret, _ = run_command([sys.executable] + sys.argv[3:], env=env_dictionary)
+    # ret, _ = run_command("python preprocess/data.py")
