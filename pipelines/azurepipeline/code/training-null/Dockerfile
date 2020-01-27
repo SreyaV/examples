@@ -5,6 +5,7 @@ COPY requirements.txt /scripts/requirements.txt
 RUN pip install -r /scripts/requirements.txt
 
 COPY train.py /scripts/train.py
+COPY pipelineWrapper.py /scripts/pipelineWrapper.py
 
 # python train.py -o model
 # will be overwritten by kf pipeline
