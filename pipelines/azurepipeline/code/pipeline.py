@@ -14,7 +14,7 @@ ws=Workspace.from_config()
 # transforms a given container op to use the pipelineWrapper
 # in each step of the pipeline
 def transformer(containerOp):
-  containerOp.arguments = ['pipelineWrapper.py', 'Tacos vs. Burritos', 'python'] + containerOp.arguments
+  containerOp.arguments = ['/scripts/pipelineWrapper.py', 'Tacos vs. Burritos', 'python'] + containerOp.arguments
   # shouldn't hard code this experiment name
   
   containerOp.container.set_image_pull_policy("Always")
