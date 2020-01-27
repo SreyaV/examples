@@ -70,7 +70,7 @@ if __name__ == "__main__":
         exp = Experiment(workspace=ws, name=experiment_name)
         run = Run(exp, run_id)
         run.child_run(name=run_name) # TODO: add the step's name 
-        tags = {"source_type": "JOB", "pipeline_step": "child"}
+        tags = {"mlflow.source.type": "JOB", "mlflow.source.name": "train.py", "mlflow.user": "urmust"}
         run.set_tags(tags)
         # log environment variables
         env_dictionary["MLFLOW_EXPERIMENT_ID"] = exp._id
@@ -82,7 +82,7 @@ if __name__ == "__main__":
         exp = Experiment(workspace=ws, name=experiment_name) 
         run = exp.start_logging(snapshot_directory=None) 
         run.child_run(name=run_name) # TODO: add the step's name
-        tags = {"source_type": "JOB", "pipeline_step": "parent"}
+        tags = {"mlflow.source.type": "JOB", "mlflow.source.name": "train.py", "mlflow.user": "urmust"}
         run.set_tags(tags) 
         job_info_dict = {"run_id": run._run_id, "experiment_name": exp.name, "experiment_id": exp._id}
         json = json.dumps(job_info_dict)
