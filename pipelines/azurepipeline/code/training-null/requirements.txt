@@ -7,3 +7,4 @@ numpy
 mlflow
 matplotlib
 azureml-mlflow
+tensorflow

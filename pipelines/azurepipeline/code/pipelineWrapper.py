@@ -6,15 +6,16 @@ import mlflow
 import azureml.core
 from azureml.core import Workspace, Experiment, Run
 from azureml.core import ScriptRunConfig
+import azureml.core
 import azureml.mlflow
 from azureml.mlflow import _setup_remote, _get_mlflow_tracking_uri
 from azureml.core.authentication import ServicePrincipalAuthentication
-
+'''
 print(os.environ)
 print(os.getcwd())
 print(os.path.dirname('/scripts/train.py'))
 print(sys.path)
-
+'''
 def get_ws():
   auth_args = {
     'tenant_id': os.environ.get('AZ_TENANT_ID'),
@@ -90,6 +91,23 @@ if __name__ == "__main__":
         env_dictionary["MLFLOW_EXPERIMENT_ID"] = exp._id
         env_dictionary["MLFLOW_RUN_ID"] = run._run_id
         env_dictionary["MLFLOW_TRACKING_URI"] = _get_mlflow_tracking_uri(ws)
-    
+ 
+        url = run.get_portal_url()
+    metadata = {
+        'outputs' : [
+        # Markdown that is hardcoded inline
+        {
+        'storage': 'inline',
+        'source': url,
+        'type': 'markdown',
+        },
+        # Markdown that is read from a file
+        ]
+    }
+    with file_io.FileIO('/mlpipeline-ui-metadata.json', 'w') as f:
+        json.dump(metadata, f)
+    print(metadata)
     ret, _ = run_command([sys.executable] + sys.argv[3:], env=env_dictionary)
+    print("I ran to completion")
+
     # ret, _ = run_command("python preprocess/data.py")

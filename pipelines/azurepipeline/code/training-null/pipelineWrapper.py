@@ -10,10 +10,12 @@ import azureml.mlflow
 from azureml.mlflow import _setup_remote, _get_mlflow_tracking_uri
 from azureml.core.authentication import ServicePrincipalAuthentication
 
+'''
 print(os.environ)
 print(os.getcwd())
 print(os.path.dirname('/scripts/train.py'))
 print(sys.path)
+'''
 
 def get_ws():
   auth_args = {
@@ -82,14 +84,39 @@ if __name__ == "__main__":
         run.child_run(name=run_name) # TODO: add the step's name 
        # _setup_remote(run)
         job_info_dict = {"run_id": run._run_id, "experiment_name": exp.name, "experiment_id": exp._id}
-        json = json.dumps(job_info_dict)
+        jsonfile = json.dumps(job_info_dict)
         with open(job_info_path,"w") as f:
-            f.write(json)
+            f.write(jsonfile)
             f.close()
         # log environment variables
         env_dictionary["MLFLOW_EXPERIMENT_ID"] = exp._id
         env_dictionary["MLFLOW_RUN_ID"] = run._run_id
         env_dictionary["MLFLOW_TRACKING_URI"] = _get_mlflow_tracking_uri(ws)
-    
+    url = run.get_portal_url()
+    metadata = {
+        'outputs' : [
+        # Markdown that is hardcoded inline
+        {
+        'storage': 'inline',
+        'source': "[Link]({})".format(url),
+        'type': 'markdown',
+        },
+        # Markdown that is read from a file
+        ]
+    }
+    #print(metadata)
+    with open('/mlpipeline-ui-metadata.json', 'w') as f:
+    #with file_io.FileIO('/mlpipeline-ui-metadata.json', 'w') as f:
+        json.dump(metadata, f)
+    #print(metadata)
     ret, _ = run_command([sys.executable] + sys.argv[3:], env=env_dictionary)
+
+    with open('/mlpipeline-ui-metadata.json', 'r') as f:
+    #with file_io.FileIO('/mlpipeline-ui-metadata.json', 'w') as f:
+        data = json.load(f)
+    print(data)
+    print("I ran to completion")
+
+    #ret, _ = run_command([sys.executable] + sys.argv[3:], env=env_dictionary)
     # ret, _ = run_command("python preprocess/data.py")
+
