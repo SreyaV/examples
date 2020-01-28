@@ -5,7 +5,7 @@ def run(output='model'):
     TRAIN_SET_LIMIT = 1000
     TRAIN_SET_COUNT = 100
 
-    TRAIN_INPUT = 
+    TRAIN_INPUT = list()
     TRAIN_OUTPUT = list()
     for i in range(TRAIN_SET_COUNT):
         a = random.randint(0, TRAIN_SET_LIMIT)
