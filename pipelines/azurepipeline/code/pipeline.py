@@ -37,19 +37,14 @@ def transformer(containerOp):
 
 @dsl.pipeline(
   name='test',
-  description='Simple TF CNN'
+  description='Privacy Experiment'
 )
 def test_train(
 ):
   """Pipeline steps"""
 
   persistent_volume_path = '/mnt/azure'
-  data_download = 'https://aiadvocate.blob.core.windows.net/public/tacodata.zip'
-  epochs = 5
-  batch = 32
-  learning_rate = 0.0001
   model_name = 'test'
-  profile_name = 'tacoprofile'
   operations = {}
   image_size = 160
   training_folder = 'train'
@@ -60,7 +55,7 @@ def test_train(
   # train
   operations['train'] = dsl.ContainerOp(
     name='train',
-    image='svangara.azurecr.io/training:1',
+    image='svangara.azurecr.io/training:3',
     command=['python'],
     arguments=[
       '/scripts/train.py',
