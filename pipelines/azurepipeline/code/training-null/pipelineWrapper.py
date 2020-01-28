@@ -102,6 +102,7 @@ if __name__ == "__main__":
         ret, _ = run_command([sys.executable] + sys.argv[3:], env=env_dictionary)
     except subprocess.CalledProcessError as e:
         print("subprocess caused error " + run_name)
+        better_e = RuntimeError("{}\n{}".format(e.stderr, e))
         run.fail(error_details=e)
     else:
         run.complete()
