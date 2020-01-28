@@ -103,7 +103,7 @@ if __name__ == "__main__":
     except subprocess.CalledProcessError as e:
         print("subprocess caused error " + run_name)
         better_e = RuntimeError("{}\n{}".format(e.stderr, e))
-        run.fail(error_details=e)
+        run.fail(error_details=better_e)
     else:
         run.complete()
         print("marked as complete")
