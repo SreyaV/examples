@@ -94,6 +94,7 @@ if __name__ == "__main__":
         env_dictionary["MLFLOW_RUN_ID"] = run._run_id
         env_dictionary["MLFLOW_TRACKING_URI"] = _get_mlflow_tracking_uri(ws)
     
+    print("before running train")
     try:
         print("trying to run train file ")
         ret, _ = run_command([sys.executable] + sys.argv[3:], env=env_dictionary)
