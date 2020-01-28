@@ -94,5 +94,12 @@ if __name__ == "__main__":
         env_dictionary["MLFLOW_RUN_ID"] = run._run_id
         env_dictionary["MLFLOW_TRACKING_URI"] = _get_mlflow_tracking_uri(ws)
     
-    ret, _ = run_command([sys.executable] + sys.argv[3:], env=env_dictionary)
-    # ret, _ = run_command("python preprocess/data.py")
+    try:
+        ret, _ = run_command([sys.executable] + sys.argv[3:], env=env_dictionary)
+        run.complete()
+    except subprocess.CalledProcessError as e:
+        print("subprocess caused error " + run_name)
+        run.fail(error_details=e)
+
+
+    
