@@ -10,6 +10,8 @@ import azureml.mlflow
 from azureml.mlflow import _get_mlflow_tracking_uri
 from azureml.core.authentication import ServicePrincipalAuthentication
 
+version = 2
+print("version is " + str(version))
 print(os.environ)
 print(os.getcwd())
 print(os.path.dirname('/scripts/train.py'))
@@ -98,11 +100,12 @@ if __name__ == "__main__":
     try:
         print("trying to run train file ")
         ret, _ = run_command([sys.executable] + sys.argv[3:], env=env_dictionary)
-        run.complete()
-        print("marked as complete")
     except subprocess.CalledProcessError as e:
         print("subprocess caused error " + run_name)
         run.fail(error_details=e)
+    else:
+        run.complete()
+        print("marked as complete")
 
 
     
