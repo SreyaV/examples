@@ -87,9 +87,9 @@ if __name__ == "__main__":
         tags = {"mlflow.source.type": "JOB", "mlflow.source.name": "train.py", "mlflow.user": "urmust"}
         run.set_tags(tags)
         job_info_dict = {"run_id": run._run_id, "experiment_name": exp.name, "experiment_id": exp._id}
-        json = json.dumps(job_info_dict)
+        json_dict = json.dumps(job_info_dict)
         with open(job_info_path,"w") as f:
-            f.write(json)
+            f.write(json_dict)
             f.close()
         # log environment variables
         env_dictionary["MLFLOW_EXPERIMENT_ID"] = exp._id
