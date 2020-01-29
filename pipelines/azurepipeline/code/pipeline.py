@@ -15,7 +15,7 @@ ws=Workspace.from_config()
 # transforms a given container op to use the pipelineWrapper
 # in each step of the pipeline
 def transformer(containerOp):
-  containerOp.arguments = ['/scripts/pipelineWrapper.py', 'test', 'python'] + containerOp.arguments
+  containerOp.arguments = ['/scripts/pipelineWrapper.py', 'Privacy', 'python'] + containerOp.arguments
   # shouldn't hard code this experiment name
   
   containerOp.container.set_image_pull_policy("Always")
@@ -44,7 +44,7 @@ def test_train(
   """Pipeline steps"""
 
   persistent_volume_path = '/mnt/azure'
-  model_name = 'test'
+  model_name = 'Privacy'
   operations = {}
   image_size = 160
   training_folder = 'train'

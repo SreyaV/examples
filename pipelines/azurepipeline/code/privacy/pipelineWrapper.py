@@ -84,7 +84,7 @@ if __name__ == "__main__":
         # start run
         ws = get_ws()
         exp = Experiment(workspace=ws, name=experiment_name) 
-        run = exp.start_logging(snapshot_directory=None) 
+        run = exp.start_logging(snapshot_directory="/scripts") 
         run.child_run(name=run_name) # TODO: add the step's name 
         tags = {"mlflow.source.type": "JOB", "mlflow.source.name": "train.py", "mlflow.user": "srevan"}
         run.set_tags(tags)
