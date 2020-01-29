@@ -44,7 +44,7 @@ def test_train(
   """Pipeline steps"""
 
   persistent_volume_path = '/mnt/azure'
-  model_name = 'Privacy'
+  model_name = 'test'
   operations = {}
   image_size = 160
   training_folder = 'train'
