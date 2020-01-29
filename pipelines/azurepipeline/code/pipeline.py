@@ -49,7 +49,7 @@ def test_train(
   image_size = 160
   training_folder = 'train'
   training_dataset = 'train.txt'
-  model_folder = 'model'
+  model_folder = 'Privacy'
 
 
   # train

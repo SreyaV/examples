@@ -6,4 +6,5 @@ future
 numpy
 mlflow
 matplotlib
+azureml-core
 azureml-mlflow

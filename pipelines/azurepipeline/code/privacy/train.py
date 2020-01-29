@@ -19,7 +19,7 @@ petal_length = X[:, 2:3]
 petal_width = X[:, 3:4]
 
 if __name__ == "__main__":
-    budget = float(sys.argv[2])
+    budget = float(sys.argv[3])
 
     with mlflow.start_run(run_name="diffpriv_covariance_linreg"):
         # Log mlflow attributes for mlflow UI
@@ -76,13 +76,4 @@ if __name__ == "__main__":
             json.dump(results, stream)
         mlflow.log_artifact("result.json")
 
-        # Save model for access through mlflow ui
-        mlflow.sklearn.log_model(model, "model")
-
-        results = {
-            "run_id": mlflow.active_run().info.run_id,
-            "model_name": "diffpriv_linreg"
-        }
-        with open("result.json", "w") as stream:
-            json.dump(results, stream)
-        mlflow.log_artifact("result.json")
+        
