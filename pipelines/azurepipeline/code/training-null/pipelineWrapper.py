@@ -104,6 +104,7 @@ if __name__ == "__main__":
         print("subprocess caused error " + run_name)
         better_e = RuntimeError("{}\n{}".format(e.stderr, e))
         run.fail(error_details=better_e)
+        raise better_e
     else:
         run.complete()
         print("marked as complete")
