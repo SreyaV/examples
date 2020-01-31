@@ -1,9 +1,0 @@
-Pillow
-pathlib2
-requests
-scikit-learn
-future
-numpy
-mlflow
-matplotlib
-azureml-mlflow
