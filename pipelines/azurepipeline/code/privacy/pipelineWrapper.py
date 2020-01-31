@@ -10,13 +10,6 @@ import azureml.mlflow
 from azureml.mlflow import _setup_remote, _get_mlflow_tracking_uri
 from azureml.core.authentication import ServicePrincipalAuthentication
 
-version = 2
-print("version is " + str(version))
-print(os.environ)
-print(os.getcwd())
-print(os.path.dirname('/scripts/train.py'))
-print(sys.path)
-
 def get_ws():
   auth_args = {
     'tenant_id': os.environ.get('AZ_TENANT_ID'),
@@ -57,7 +50,6 @@ def run_command(program_and_args, # ['python', 'foo.py', '3']
 if __name__ == "__main__":
     job_info_path = "parent_run.json"
     sys.argv.append("1")
-    print(sys.argv)
     experiment_name = sys.argv[1]
     run_name = sys.argv[3][:-3] # should be the file name
 
@@ -67,7 +59,7 @@ if __name__ == "__main__":
         # create child run (id )
         with open(job_info_path, 'r') as f:
             job_info_dict = json.load(f)
-        print("dictionary read from file " + job_info_dict+ "\n")
+        print("Dictionary read from file " + job_info_dict+ "\n")
         run_id = job_info_dict["run_id"]
         ws = get_ws() # TODO set path and auth 
         exp = Experiment(workspace=ws, name=experiment_name)
@@ -99,15 +91,15 @@ if __name__ == "__main__":
         env_dictionary["MLFLOW_TRACKING_URI"] = _get_mlflow_tracking_uri(ws)
         env_dictionary["HOME"] = "~/"
     
-    print("before running train")
+    print("Before running train")
     try:
-        print("trying to run train file ")
+        print("Trying to run train file ")
         ret, _ = run_command([sys.executable] + sys.argv[3:], env=env_dictionary)
     except subprocess.CalledProcessError as e:
-        print("subprocess caused error " + run_name)
+        print("Subprocess caused error " + run_name)
         better_e = RuntimeError("{}\n{}".format(e.stderr, e))
         run.fail(error_details=better_e)
         raise better_e
     else:
         run.complete()
-        print("marked as complete")
+        print("Marked as complete")
